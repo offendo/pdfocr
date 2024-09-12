@@ -15,4 +15,4 @@ RUN pip install -U nougat-ocr && pip install -U albumentations==1.0 transformers
 
 WORKDIR /app/
 
-ENTRYPOINT ["nougat", "--checkpoint", "./nougat-base/" -o "."]
+ENTRYPOINT ["nougat", "--checkpoint", "./nougat-base/", "-o", "."]
