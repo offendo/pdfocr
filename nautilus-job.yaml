@@ -17,14 +17,28 @@ spec:
                       - NVIDIA-A100-80GB-PCIe
                       - NVIDIA-A100-80GB-PCIe
                       - NVIDIA-GeForce-RTX-3090
+                      - NVIDIA-GeForce-RTX-4090
       imagePullSecrets:
         - name: nilay-ghcr-key
       containers:
         - name: converter
           image: ghcr.io/offendo/pdfocr:latest
-          command: ["/bin/bash"]
+          # command: ["/bin/bash"]
+          # args:
+          #   ["-c", "nougat --checkpoint nougat-base/ -o /volume/pdfocr/per-page/ /volume/pdfocr/pdfs/"]
+          command: ["python"]
           args:
-            ["-c", "nougat --checkpoint nougat-base/ -o /volume/pdfocr/mmds/ /volume/pdfocr/pdfs/*"]
+            [
+              "random_pages.py", 
+              "--pdf_dir",
+              "/volume/pdfocr/pdfs/",
+              "--output_dir",
+              "/volume/pdfocr/per-page/",
+              "--n_books",
+              "50",
+              "--pages",
+              "100"
+            ]
           workingDir: /app
           volumeMounts:
             - name: nilay-data-volume-rwm-central
@@ -33,15 +47,15 @@ spec:
               mountPath: /etc/api-tokens
           resources:
             limits:
-              memory: 32Gi
+              memory: 64Gi
               cpu: 2
               nvidia.com/gpu: 1
-              ephemeral-storage: 100Gi
+              ephemeral-storage: 50Gi
             requests:
-              memory: 32Gi
+              memory: 64Gi
               cpu: 2
               nvidia.com/gpu: 1
-              ephemeral-storage: 100Gi
+              ephemeral-storage: 50Gi
       initContainers:
         - name: chmod
           image: alpine:latest

@@ -1,4 +1,5 @@
 import os
+import shutil
 import subprocess 
 import random
 import PyPDF2
@@ -9,26 +10,37 @@ random.seed(1234)
 
 def choose_random_files(pdf_dir: Path, n: int):
     files = os.listdir(pdf_dir)
-    choices = random.sample(files, k=n)
+    num_sample = min(n, len(files))
+    choices = random.sample(files, k=num_sample)
     return [Path(pdf_dir, f) for f in choices]
 
 def choose_random_pages(file: Path, n: int):
-    with open(file, 'r') as f:
-        reader = PyPDF2.PdfReader(f)
+    reader = PyPDF2.PdfReader(str(file))
     num_pages = len(reader.pages)
-    return random.sample(list(range(num_pages)), k=n)
+    num_sample = min(n, num_pages)
+    return random.sample(list(range(num_pages)), k=num_sample)
 
 
 def create_random_selection(pdf_dir, n_books: int, pages_per_book: int):
     files = choose_random_files(pdf_dir, n_books)
     for file in files:
-        pages = choose_random_pages(file, pages_per_book)
-        yield (file, pages)
+        try:
+            print(f"Chose {file}")
+            pages = choose_random_pages(file, pages_per_book)
+            yield (file, pages)
+        except Exception as e:
+            print(f"Failed to read {file} because: {e}")
 
 
 def process(file, pages, output_dir):
-    page_cmd = ','.join(map(str,pages))
-    return subprocess.getoutput(f'bash -c "nougat --checkpoint nougat-base/ -o {output_dir} {file} --pages {page_cmd}"')
+    for page in pages:
+        cmd = f"nougat --checkpoint nougat-base/ -o '{output_dir}' '{file}' --pages {page}"
+        print(f'running: {cmd}')
+        output = subprocess.getoutput(cmd)
+        dest_file = Path(output_dir) / Path(file).with_suffix('.mmd').name
+        renamed_dest_file = Path(dest_file).with_suffix(f'.p{page}.mmd')
+        shutil.move(dest_file, renamed_dest_file)
+        print(f"Saved file to {renamed_dest_file}")
 
 if __name__ == '__main__':
     parser = ArgumentParser('page processor')
