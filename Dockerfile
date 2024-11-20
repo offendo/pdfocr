@@ -11,8 +11,10 @@ RUN apt update && apt install -y wget && \
    && wget https://github.com/facebookresearch/nougat/releases/download/0.1.0-base/tokenizer.json  \
    && wget https://github.com/facebookresearch/nougat/releases/download/0.1.0-base/tokenizer_config.json
 
-RUN pip install -U nougat-ocr && pip install -U albumentations==1.0 transformers==4.38.2
+RUN pip install -U nougat-ocr PyPDF2 && pip install -U albumentations==1.0 transformers==4.38.2
 
 WORKDIR /app/
+
+COPY random_pages.py .
 
 ENTRYPOINT ["nougat", "--checkpoint", "./nougat-base/", "-o", "."]
