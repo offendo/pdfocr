@@ -8,6 +8,7 @@ authors = [
 dependencies = [
     "nougat-ocr>=0.1.17",
     "transformers==4.38.2",
+    "pypdf2>=3.0.1",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
