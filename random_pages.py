@@ -6,7 +6,7 @@ import PyPDF2
 from argparse import ArgumentParser
 from pathlib import Path
 
-random.seed(1234)
+random.seed(4321)
 
 def choose_random_files(pdf_dir: Path, n: int):
     files = os.listdir(pdf_dir)
@@ -34,13 +34,16 @@ def create_random_selection(pdf_dir, n_books: int, pages_per_book: int):
 
 def process(file, pages, output_dir):
     for page in pages:
-        cmd = f"nougat --checkpoint nougat-base/ -o '{output_dir}' '{file}' --pages {page}"
-        print(f'running: {cmd}')
-        output = subprocess.getoutput(cmd)
-        dest_file = Path(output_dir) / Path(file).with_suffix('.mmd').name
-        renamed_dest_file = Path(dest_file).with_suffix(f'.p{page}.mmd')
-        shutil.move(dest_file, renamed_dest_file)
-        print(f"Saved file to {renamed_dest_file}")
+        try:
+            cmd = f"nougat --checkpoint nougat-base/ -o '{output_dir}' '{file}' --pages {page}"
+            print(f'running: {cmd}')
+            output = subprocess.getoutput(cmd)
+            dest_file = Path(output_dir) / Path(file).with_suffix('.mmd').name
+            renamed_dest_file = Path(dest_file).with_suffix(f'.p{page}.mmd')
+            shutil.move(dest_file, renamed_dest_file)
+            print(f"Saved file to {renamed_dest_file}")
+        except Exception as e:
+            print(f'Failed on {file} page {page} because {e}')
 
 if __name__ == '__main__':
     parser = ArgumentParser('page processor')

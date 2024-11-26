@@ -23,22 +23,21 @@ spec:
       containers:
         - name: converter
           image: ghcr.io/offendo/pdfocr:latest
-          # command: ["/bin/bash"]
+          command: ["/bin/bash"]
+          args: ["-c", "nougat --checkpoint nougat-base/ -o /volume/pdfocr/mmds/ /volume/pdfocr/pdfs/"]
+          # command: ["python"]
           # args:
-          #   ["-c", "nougat --checkpoint nougat-base/ -o /volume/pdfocr/per-page/ /volume/pdfocr/pdfs/"]
-          command: ["python"]
-          args:
-            [
-              "random_pages.py", 
-              "--pdf_dir",
-              "/volume/pdfocr/pdfs/",
-              "--output_dir",
-              "/volume/pdfocr/per-page/",
-              "--n_books",
-              "50",
-              "--pages",
-              "100"
-            ]
+          #   [
+          #     "random_pages.py", 
+          #     "--pdf_dir",
+          #     "/volume/pdfocr/pdfs/",
+          #     "--output_dir",
+          #     "/volume/pdfocr/per-page/",
+          #     "--n_books",
+          #     "50",
+          #     "--pages",
+          #     "100"
+          #   ]
           workingDir: /app
           volumeMounts:
             - name: nilay-data-volume-rwm-central
@@ -49,12 +48,12 @@ spec:
             limits:
               memory: 64Gi
               cpu: 2
-              nvidia.com/gpu: 1
+              nvidia.com/gpu: 2
               ephemeral-storage: 50Gi
             requests:
               memory: 64Gi
               cpu: 2
-              nvidia.com/gpu: 1
+              nvidia.com/gpu: 2
               ephemeral-storage: 50Gi
       initContainers:
         - name: chmod

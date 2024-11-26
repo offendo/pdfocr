@@ -8,3 +8,11 @@ wheels/
 
 # venv
 .venv
+
+# Data and stuff
+downloaded-pdfs/
+mmds/
+node_modules/
+pages/
+pdfs/
+random_pages/
